@@ -142,6 +142,19 @@ const run = async () => {
             res.send(products);
         });
 
+        app.post('/products', verifyJWT, verifySeller, async (req, res) => {
+            const product = req.body;
+            // const query = {
+            //     productName: product.productName
+            // }
+            // const alreadyAddedProduct = await productsCollection.find(query).toArray();
+            // if (alreadyAddedProduct.length) {
+            //     const message = `${product.productName} category already Added`;
+            //     return res.send({ acknowledged: false, message })
+            // }
+            const result = await productsCollection.insertOne(product);
+            res.send(result);
+        });
 
         
 
