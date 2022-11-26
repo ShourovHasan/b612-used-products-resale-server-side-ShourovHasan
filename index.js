@@ -111,7 +111,15 @@ const run = async () => {
             res.send(result);
         })
 
-        
+        // Category 
+        app.get('/categories', async (req, res) => {
+            const query = {};
+            // const result = await categoriesCollection.find(query).project({ categoryName: 1 }).toArray();
+            const result = await categoriesCollection.find(query).toArray();
+            res.send(result);
+        });
+
+      
        
 
         
