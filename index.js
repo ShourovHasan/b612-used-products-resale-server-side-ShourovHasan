@@ -119,7 +119,21 @@ const run = async () => {
             res.send(result);
         });
 
-      
+        app.post('/categories', verifyJWT, verifySeller, async (req, res) => {
+            const category = req.body;
+            const query = {
+                categoryName: category.categoryName
+            }
+            const alreadyAddedCategory = await categoriesCollection.find(query).toArray();
+            if (alreadyAddedCategory.length) {
+                const message = `${category.categoryName} category already Added`;
+                return res.send({ acknowledged: false, message })
+            }
+            const result = await categoriesCollection.insertOne(category);
+            res.send(result);
+        });
+
+
        
 
         
