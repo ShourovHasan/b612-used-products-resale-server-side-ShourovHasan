@@ -77,19 +77,6 @@ const run = async () => {
         }
 
         
-        app.post('/users', async (req, res) => {
-            const user = req.body;
-            const query = {
-                email: user.email
-            }
-            const alreadyAddedUser = await usersCollection.find(query).toArray();
-            if (alreadyAddedUser.length) {
-                const message = `already you are our user. Don't need to create an account`;
-                return res.send({ message })
-            }
-            const result = await usersCollection.insertOne(user);
-            res.send(result);
-        })
 
         
        
