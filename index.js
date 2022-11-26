@@ -76,6 +76,26 @@ const run = async () => {
             next();
         }
 
+        app.get('/users/admin/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email };
+            const user = await usersCollection.findOne(query);
+            res.send({ isAdmin: user?.userType === 'admin' });
+        });
+
+        app.get('/users/seller/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email };
+            const user = await usersCollection.findOne(query);
+            res.send({ isSeller: user?.userType === 'seller' });
+        });
+
+        app.get('/users/buyer/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email };
+            const user = await usersCollection.findOne(query);
+            res.send({ isBuyer: user?.userType === 'buyer' });
+        });
         
         app.post('/users', async (req, res) => {
             const user = req.body;
@@ -91,8 +111,70 @@ const run = async () => {
             res.send(result);
         })
 
-        
-        
+        // Category 
+        app.get('/categories', async (req, res) => {
+            const query = {};
+            // const result = await categoriesCollection.find(query).project({ categoryName: 1 }).toArray();
+            const result = await categoriesCollection.find(query).toArray();
+            res.send(result);
+        });
+
+        app.post('/categories', verifyJWT, verifySeller, async (req, res) => {
+            const category = req.body;
+            const query = {
+                categoryName: category.categoryName
+            }
+            const alreadyAddedCategory = await categoriesCollection.find(query).toArray();
+            if (alreadyAddedCategory.length) {
+                const message = `${category.categoryName} category already Added`;
+                return res.send({ acknowledged: false, message })
+            }
+            const result = await categoriesCollection.insertOne(category);
+            res.send(result);
+        });
+
+
+        // Products 
+        app.get('/products', verifyJWT, verifySeller, async (req, res) => {
+            const sellerEmail = req.query.sellerEmail;
+            const query = { sellerEmail: sellerEmail };
+            const products = await productsCollection.find(query).toArray();
+            res.send(products);
+        });
+
+        app.post('/products', verifyJWT, verifySeller, async (req, res) => {
+            const product = req.body;
+            // const query = {
+            //     productName: product.productName
+            // }
+            // const alreadyAddedProduct = await productsCollection.find(query).toArray();
+            // if (alreadyAddedProduct.length) {
+            //     const message = `${product.productName} category already Added`;
+            //     return res.send({ acknowledged: false, message })
+            // }
+            const result = await productsCollection.insertOne(product);
+            res.send(result);
+        });
+
+        app.put('/products/seller/:id', verifyJWT, verifySeller, async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updatedDoc = {
+                $set: {
+                    advStatus: 'advertised'
+                }
+            }
+            const result = await productsCollection.updateOne(filter, updatedDoc, options);
+            res.send(result);
+        });
+
+        app.delete('/products/:id', verifyJWT, verifySeller, async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const result = await productsCollection.deleteOne(filter);
+            res.send(result);
+        })
 
     }
     finally {
