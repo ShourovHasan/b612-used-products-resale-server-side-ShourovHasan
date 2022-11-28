@@ -359,7 +359,7 @@ const run = async () => {
             const updatedDoc = {
                 $set: {
                     booking: 'booked',
-                    advStatus: 'not advertised'
+                    // advStatus: 'not advertised'
                 }
             }
             const productUpdate = await productsCollection.updateOne(filter, updatedDoc);
@@ -377,6 +377,7 @@ const run = async () => {
             const updatedDoc = {
                 $set: {
                     booking: 'booking deleted',
+                    soldStatus: 'sold and deleted'
                 }
             }
             const paymentQuery = { productId: productId };
