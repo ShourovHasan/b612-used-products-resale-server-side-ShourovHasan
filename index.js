@@ -242,7 +242,7 @@ const run = async () => {
             res.send(result);
         });
 
-        // Products 
+        // Products showed 
         app.get('/advProducts', async (req, res) => {
             const query = {
                 advStatus: "advertised"
